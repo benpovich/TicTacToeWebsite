@@ -1,0 +1,28 @@
+Tic-Tac-Toe Website
+
+Rubric turned in on time (5 points)
+
+Languages/Frameworks used (10 points)
+10 - Learned/Used React.js frontend
+0 - Node.JS/Socket.io backend
+0 - MySQL Database
+
+Functionality (55 points)
+3 Users can register
+3 Users can log out
+3 Passwords are hashed and salted
+1 A session is created when a user logs in
+20 Logged in users can play a game of tic-tac-toe against the computer
+5 Users can send friend requests to other users
+5 Users can accept or decline friend requests from other users
+5 Users can challenge their friends to a game of tic tac toe
+10 Users can play a game of tic tac toe against their friends
+
+
+Mobile Friendly (5 points)
+
+Best Practices (5 points)
+3 Code is readable and well formatted
+2 All pages pass the html validator
+
+Creative Portion (20 points)
