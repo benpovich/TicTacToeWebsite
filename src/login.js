@@ -21,8 +21,12 @@ class Login extends Component{
                         <form onSubmit={this.props.loginReq}>
                             Username: <input type="text" id="username" onChange={this.props.onChangeUname}></input>
                             Password: <input type="password" id="password" onChange={this.props.onChangePword}></input>
-                        <input type="Submit" value="Login" id="loginbtn"></input>
-                    </form>
+                            <input type="Submit" value="Login" id="loginbtn"></input>
+                        </form>
+                        <form onSubmit={this.props.regReq}>
+                            <input type="Submit" value="Register" id="regbtn"></input>
+                        </form>
+                        
                     </div>
                     
                 );
@@ -32,10 +36,13 @@ class Login extends Component{
             return(
                 <div id="loginTerminal">
                     <form onSubmit={this.props.loginReq}>
-                    Username: <input type="text" id="username" onChange={this.props.onChangeUname}></input>
-                    Password: <input type="password" id="password" onChange={this.props.onChangePword}></input>
-                    <input type="Submit" value="Login" id="loginbtn"></input>
-                </form>
+                        Username: <input type="text" id="username" onChange={this.props.onChangeUname}></input>
+                        Password: <input type="password" id="password" onChange={this.props.onChangePword}></input>
+                        <input type="Submit" value="Login" id="loginbtn"></input>
+                    </form>
+                    <form onSubmit={this.props.regReq}>
+                            <input type="Submit" value="Register" id="regbtn"></input>
+                        </form>
                 </div>
                 
             );

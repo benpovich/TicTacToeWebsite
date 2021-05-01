@@ -20,13 +20,14 @@ class App extends Component{
     this.onChangeUname = this.onChangeUname.bind(this);
     this.onChangePword = this.onChangePword.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
+    this.regReq = this.regReq.bind(this);
   }
 
 
   render(){
     return (
       <div className="login">
-        <Login username={this.state.username} password={this.state.enteredPassword} loginReq={this.loginReq}
+        <Login username={this.state.username} password={this.state.enteredPassword} regReq = {this.regReq} loginReq={this.loginReq}
         onChangeUname={this.onChangeUname} onChangePword={this.onChangePword} isLoggedIn={this.state.isLoggedIn} attemptLogin={this.state.attemptLogin}
         ></Login>
       </div>
@@ -42,6 +43,27 @@ class App extends Component{
       });
       if(data["loginAttempt"]){
         self.setState({isLoggedIn: true}); 
+        alert("Logged into " + self.state.username + " successfully!");
+      }
+      else{
+        alert("Failed to log in. Please try again");
+      }
+    });
+
+
+    socketio.on("reg_req",function(data){
+      console.log("Got reg response! And it was: " + data["regAttempt"]);
+      //TODO do stuff
+      if(data["regAttempt"]){
+        alert("Registration successful!");
+      }
+      else{
+        if(data["duplicate"]){
+          alert("Account with username: "+ this.state.username + " already exists! Try logging in.");
+        }
+        else{
+          alert("Registration unsuccessful :(");
+        }
       }
     });
   }
@@ -67,7 +89,10 @@ class App extends Component{
     //if so, we have a successful login, else we fail to login
   }
 
-
+  regReq(event){
+    event.preventDefault();
+    socketio.emit("reg_req",{username: this.state.username, passwordAttempt: this.state.enteredPassword});
+  }
 
 }
 

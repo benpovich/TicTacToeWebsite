@@ -1,8 +1,9 @@
 const http = require("http"),
     fs = require("fs");
-
+const mysql = require("mysql");
 const port = 3456;
 const file = "/src/index.html";
+const bcrypt = require("bcrypt");
 // Listen for HTTP connections.  This is essentially a miniature static file server that only serves our one file, client.html, on port 3456:
 
 const server = http.createServer(function (req, res) {
@@ -11,8 +12,7 @@ const server = http.createServer(function (req, res) {
         "Access-Control-Allow-Methods": "GET,POST",
         "Access-Control-Allow-Credentials": true
     }
-    res.writeHead(200,headers);
-    console.log("hello");
+    res.writeHead(200,headers);;
     res.end();
 
 
@@ -32,7 +32,6 @@ const server = http.createServer(function (req, res) {
    
 
 });
-console.log("hello2");
 server.listen(port);
 const socketio = require("socket.io")(http, {
     // cors:{
@@ -43,16 +42,73 @@ const socketio = require("socket.io")(http, {
     wsEngine: 'ws'
 });
 
+//connecting to mysql database to get/set username and password
+const mysqldb = mysql.createConnection({ //referencing https://stackoverflow.com/questions/17618381/how-to-access-mysql-database-with-socket-io
+    host: "localhost",
+    database: "tictactoedb",
+    user: "wustl_inst",
+    password: "wustl_pass"
+});
+
+
 
 // Attach our Socket.IO server to our HTTP server to listen
 const io = socketio.listen(server);
 io.sockets.on("connection", function (socket) {
     // This callback runs when a new Socket.IO connection is established.
     socket.on('login_req', function (data) {
-        let isSuccess = true;
+        mysqldb.query("select password from users where username=?",[data["username"]],function(err,res){
+            if(err){
+                console.log(err);
+                console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]);
+                io.sockets.emit("login_req", { loginAttempt: false});
+            }
+            else if(res.length==0){
+                io.sockets.emit("login_req", { loginAttempt: false});
+            }
+            else{
+                let response = JSON.parse(JSON.stringify(res));
+                console.log(response);
+                console.log(response[0].password);
 
-        // This callback runs when the server receives a new message from the client.
-        console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]); // log it to the Node.JS output
-        io.sockets.emit("login_req", { loginAttempt: isSuccess }); // broadcast the message to other users
+                if(bcrypt.compareSync(data["passwordAttempt"],response[0].password)){
+                    console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]);
+                    io.sockets.emit("login_req", { loginAttempt: true});
+                }
+                else{
+                    console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]);
+                    io.sockets.emit("login_req", { loginAttempt: false});
+                }
+            }
+
+        });
+        
+        
     });
+
+    socket.on('reg_req', function (data){
+        const salt = bcrypt.genSaltSync(10); //from https://www.npmjs.com/package/bcrypt
+        const hashedpassword = bcrypt.hashSync(data["passwordAttempt"],salt);
+
+
+        mysqldb.query("insert into users (username, password) values (?,?)",[data["username"],hashedpassword],function(err,res){
+            if(err){
+                
+                console.log("failed to reg user: " + data["username"]);
+                console.log(err);
+                if(err["code"]=="ER_DUP_ENTRY"){
+                    io.sockets.emit("reg_req", { regAttempt: false, duplicate: true });
+                }
+                else{
+                    io.sockets.emit("reg_req", { regAttempt: false, duplicate: false});
+                }
+                
+            }
+            else{
+                console.log("successfully added user: " + data["username"] );
+                io.sockets.emit("reg_req", { regAttempt: true, duplicate: false });
+            }
+        });
+    })
+
 });
