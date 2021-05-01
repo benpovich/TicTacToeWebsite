@@ -3,7 +3,8 @@ import './App.css';
 import Login from './login.js';
 import io from 'socket.io-client'
 
-let socketio = io.connect();
+let socketio = io("ws://ec2-184-73-88-167.compute-1.amazonaws.com:3456/",{transports: ["websocket"]});
+
 class App extends Component{
   
   
@@ -12,11 +13,13 @@ class App extends Component{
     this.state={
       username: "",
       enteredPassword: "",
-      isLoggedIn: false
+      isLoggedIn: false,
+      attemptLogin: false
     }
     this.loginReq = this.loginReq.bind(this);
     this.onChangeUname = this.onChangeUname.bind(this);
     this.onChangePword = this.onChangePword.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
   }
 
 
@@ -24,15 +27,22 @@ class App extends Component{
     return (
       <div className="login">
         <Login username={this.state.username} password={this.state.enteredPassword} loginReq={this.loginReq}
-        onChangeUname={this.onChangeUname} onChangePword={this.onChangePword} isLoggedIn={this.state.isLoggedIn}
+        onChangeUname={this.onChangeUname} onChangePword={this.onChangePword} isLoggedIn={this.state.isLoggedIn} attemptLogin={this.state.attemptLogin}
         ></Login>
       </div>
     );
   }
 
   componentDidMount(){
+    let self = this;
     socketio.on("login_req", function(data){
-        //if(loginsuccessful){this.setstate({isLoggedIn: true}); } else...
+      console.log("Got request! And it was: " + data["loginAttempt"]);
+      self.setState({
+        attemptLogin: true
+      });
+      if(data["loginAttempt"]){
+        self.setState({isLoggedIn: true}); 
+      }
     });
   }
 
@@ -52,7 +62,7 @@ class App extends Component{
     event.preventDefault();
     console.log(this.state.username);
     console.log(this.state.enteredPassword);
-    socketio.emit("login_req",{username: this.state.username, passwordAttempt: this.state.password});
+    socketio.emit("login_req",{username: this.state.username, passwordAttempt: this.state.enteredPassword});
     //sends req to server to verify if this is the correct username/password
     //if so, we have a successful login, else we fail to login
   }
