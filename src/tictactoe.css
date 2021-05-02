@@ -1,0 +1,12 @@
+#board{
+    display: grid;
+    margin: auto;
+    background-color: aqua;
+}
+
+.boardSquare{
+    
+    border: 1px solid black;
+    text-align: center;
+    
+}

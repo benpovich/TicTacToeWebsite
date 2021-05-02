@@ -10,6 +10,9 @@ class Login extends Component{
                 return(
                     <div id="loginTerminal">
                         <h3>Welcome, {this.props.username}</h3>
+                        <form onSubmit={this.props.logoutReq}>
+                            <input type="Submit" value="Log out" id="regbtn"></input>
+                        </form>
                     </div>
                 );
                
@@ -42,7 +45,7 @@ class Login extends Component{
                     </form>
                     <form onSubmit={this.props.regReq}>
                             <input type="Submit" value="Register" id="regbtn"></input>
-                        </form>
+                    </form>
                 </div>
                 
             );
