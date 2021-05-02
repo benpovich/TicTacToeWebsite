@@ -34,11 +34,6 @@ const server = http.createServer(function (req, res) {
 });
 server.listen(port);
 const socketio = require("socket.io")(http, {
-    // cors:{
-    //     origin: "http://ec2-184-73-88-167.compute-1.amazonaws.com:3000",
-    //     credentials: true,
-    //     mehods: ["GET","POST"]
-    // },
     wsEngine: 'ws'
 });
 
@@ -51,7 +46,6 @@ const mysqldb = mysql.createConnection({ //referencing https://stackoverflow.com
 });
 
 
-
 // Attach our Socket.IO server to our HTTP server to listen
 const io = socketio.listen(server);
 io.sockets.on("connection", function (socket) {
@@ -60,24 +54,23 @@ io.sockets.on("connection", function (socket) {
         mysqldb.query("select password from users where username=?",[data["username"]],function(err,res){
             if(err){
                 console.log(err);
-                console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]);
-                io.sockets.emit("login_req", { loginAttempt: false});
+                console.log("login requested from: " + data["username"]);
+                io.sockets.emit("login_req", { loginAttempt: false, username: data["username"]});
             }
             else if(res.length==0){
-                io.sockets.emit("login_req", { loginAttempt: false});
+                io.sockets.emit("login_req", { loginAttempt: false, username: data["username"]});
             }
             else{
                 let response = JSON.parse(JSON.stringify(res));
-                console.log(response);
-                console.log(response[0].password);
+               
 
                 if(bcrypt.compareSync(data["passwordAttempt"],response[0].password)){
-                    console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]);
-                    io.sockets.emit("login_req", { loginAttempt: true});
+                    console.log("login requested from: " + data["username"] );
+                    io.sockets.emit("login_req", { loginAttempt: true, username: data["username"]});
                 }
                 else{
-                    console.log("login requested from: " + data["username"] + " with password " + data["passwordAttempt"]);
-                    io.sockets.emit("login_req", { loginAttempt: false});
+                    console.log("login requested from: " + data["username"]);
+                    io.sockets.emit("login_req", { loginAttempt: false, username: data["username"]});
                 }
             }
 
@@ -97,18 +90,103 @@ io.sockets.on("connection", function (socket) {
                 console.log("failed to reg user: " + data["username"]);
                 console.log(err);
                 if(err["code"]=="ER_DUP_ENTRY"){
-                    io.sockets.emit("reg_req", { regAttempt: false, duplicate: true });
+                    io.sockets.emit("reg_req", { regAttempt: false, duplicate: true, username: data["username"] });
                 }
                 else{
-                    io.sockets.emit("reg_req", { regAttempt: false, duplicate: false});
+                    io.sockets.emit("reg_req", { regAttempt: false, duplicate: false, username: data["username"]});
                 }
                 
             }
             else{
                 console.log("successfully added user: " + data["username"] );
-                io.sockets.emit("reg_req", { regAttempt: true, duplicate: false });
+                io.sockets.emit("reg_req", { regAttempt: true, duplicate: false, username: data["username"] });
             }
         });
+    });
+
+    socket.on('send_friend_req', function(data){
+        mysqldb.query("insert into friends (user,friend,isFriend,isRequested) values (?,?,?,?)",[data["receiver"],data["sender"],'no','yes'],function(err,res){
+            if(err){
+                console.log("failed to send friend request from " + data["sender"] + " to " + data["receiver"]);
+                console.log(err);
+                io.sockets.emit("sent_req",{sender: data["sender"], receiver: data["receiver"], isSuccess: false});
+            }
+            else{
+                console.log("sent friend request from " + data["sender"] + " to " + data["receiver"]);
+                io.sockets.emit("received_friend_req",{sender: data["sender"], receiver: data["receiver"]});
+                io.sockets.emit("sent_req",{sender: data["sender"], receiver: data["receiver"], isSuccess: true});
+            }
+        }); //adding requester as friend, and the receiver as user, notifying them they've been requested
+    });
+
+    socket.on('get_friend_req',function(data){
+        mysqldb.query("select friend from friends where (user=? and isRequested='yes' and isFriend='no')",[data["user"]],function(err,res){
+            if(err){
+                console.log("failed to get friend requests to user: " + data["sender"]);
+                console.log(err);
+                io.sockets.emit("get_friend_req", {isSuccess: false, username: data["user"]});
+            }
+            else{
+                console.log(res);
+                let response = JSON.parse(JSON.stringify(res));
+                console.log(response);
+                io.sockets.emit("get_friend_req",{isSuccess: true, friendReqs: response, username: data["user"]});
+            }
+        });
+    });
+
+    socket.on('accept_friend_req',function(data){
+        mysqldb.query("update friends set isFriend='yes', isRequested='no' where (user=? and friend=?)",[data["user"],data["friend"]],function(err,res){
+            if(err){
+                console.log(err)
+                io.sockets.emit("accept_friend_req",{isSuccess: false, username: data["user"], friend: data["friend"]});
+                io.sockets.emit("accept_friend_req",{username: data["friend"], friend: data["user"], isSuccess: false});
+            }
+            else{
+                mysqldb.query("insert into friends (user,friend,isFriend,isRequested) values (?,?,?,?)",[data["friend"],data["user"],'yes','no'],function(err,res){
+                    if(err){
+                        console.log(err);
+                        io.sockets.emit("accept_friend_req",{username: data["friend"], friend: data["user"], isSuccess: false});
+                        io.sockets.emit("accept_friend_req",{isSuccess: false, username: data["user"], friend: data["friend"]});
+                    }
+                    else{
+                        console.log("friend request accepted between " + data["user"] + " and " + data["friend"]);
+                        io.sockets.emit("accept_friend_req",{isSuccess: true, username: data["user"], friend: data["friend"]});
+                        io.sockets.emit("accept_friend_req",{isSuccess: true, username: data["friend"], friend: data["user"]});
+                    }
+                });
+            }
+        });
+    });
+
+
+
+    socket.on('decline_friend_req',function(data){
+        mysqldb.query("delete from friends where (user=? and friend=?)",[data["user"],data["friend"]],function(err,res){
+            if(err){
+                console.log(err)
+                io.sockets.emit("decline_friend_req",{isSuccess: false, username: data["user"], friend: data["friend"]});
+            }
+            else{
+                console.log("friend request rejected by " + data["user"] + " from " + data["friend"]);
+                io.sockets.emit("decline_friend_req",{isSuccess: true, username: data["user"], friend: data["friend"]});
+            }
+        });
+    });
+
+
+    socket.on('get_friends',function(data){
+        mysqldb.query("select friend from friends where (user=? and isFriend='yes')",[data["user"]],function(err,res){
+            if(err){
+                console.log(err);
+                io.sockets.emit("get_friends",{isSuccess: false, username: data["user"]});
+            }
+            else{
+                let response = JSON.parse(JSON.stringify(res));
+                console.log(data["user"] + " requested friends");
+                io.sockets.emit("get_friends",{isSuccess: true, friends: response, username: data["user"]});
+            }
+        })
     })
 
 });
