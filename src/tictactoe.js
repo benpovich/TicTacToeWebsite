@@ -26,6 +26,8 @@ class TicTacToe extends Component{
                     return(
                         <div id="totalboard">
                             <h3>Unfortunately {this.props.username}, you tied with {this.props.opponent}.</h3>
+                            <h3>Waiting for host to start new game...</h3>
+                            <input type="submit" value="Leave Game" onClick={this.props.leaveGame}></input>
                             <div id="board" style={boardStyle}>
                                 {this.props.board.map((value,index) => (
                                 <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
@@ -40,6 +42,8 @@ class TicTacToe extends Component{
                     return(
                         <div id="totalboard">
                             <h3>Congrats {this.props.username}, you won against {this.props.opponent}!</h3>
+                            <h3>Waiting for host to start new game...</h3>
+                            <input type="submit" value="Leave Game" onClick={this.props.leaveGame}></input>
                             <div id="board" style={boardStyle}>
                                 {this.props.board.map((value,index) => (
                                 <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
@@ -53,6 +57,8 @@ class TicTacToe extends Component{
                     return(
                         <div id="totalboard">
                             <h3>Sorry {this.props.username}, you lost against {this.props.opponent} :(</h3>
+                            <h3>Waiting for host to start new game...</h3>
+                            <input type="submit" value="Leave Game" onClick={this.props.leaveGame}></input>
                             <div id="board" style={boardStyle}>
                                 {this.props.board.map((value,index) => (
                                 <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
@@ -66,7 +72,7 @@ class TicTacToe extends Component{
             }
             else{
                 let opPlayer = "";
-                if(this.props.player=="X"){
+                if(this.props.player==="X"){
                     opPlayer = "O";
                 }
                 else{
@@ -77,6 +83,7 @@ class TicTacToe extends Component{
                     <div id="totalboard">
                         <h2>{this.props.username}({this.props.player}) vs {this.props.opponent}({opPlayer})</h2>
                         <h3>{this.props.curTurn}'s turn</h3>
+                        <input type="submit" value="Leave Game" onClick={this.props.leaveGame}></input>
 
                         <div id="board" style={boardStyle}>
                             {this.props.board.map((value,index) => (

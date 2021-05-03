@@ -237,4 +237,12 @@ io.sockets.on("connection", function (socket) {
     socket.on('newGame',function(data){
         io.sockets.emit("newGame",{oppPlayer: data["oppPlayer"], board: data["board"], opponent: data["opponent"]});
     });
+
+    socket.on('send_msg',function(data){
+        io.sockets.emit("receive_msg",{message: data["message"], sender: data["sender"], receiver: data["receiver"]});
+    })
+
+    socket.on('leave_game',function(data){
+        io.sockets.emit("leave_game",{user: data["opponent"]});
+    })
 });

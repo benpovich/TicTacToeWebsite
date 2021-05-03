@@ -4,7 +4,8 @@ import Login from './login.js';
 import DimSelect from './DimSelect.js';
 import TicTacToe from './tictactoe.js';
 import FriendManager from './FriendManager.js';
-import io from 'socket.io-client'
+import Chat from './Chat.js';
+import io from 'socket.io-client';
 
 let socketio = io("ws://ec2-184-73-88-167.compute-1.amazonaws.com:3456/", { transports: ["websocket"] });
 
@@ -32,7 +33,9 @@ class App extends Component {
       isOnline: false,
       currentTurn: "X",
       isHost: false,
-      challengers: []
+      challengers: [],
+      message: "",
+      receivedMsg: []
     }
     this.loginReq = this.loginReq.bind(this);
     this.onChangeUname = this.onChangeUname.bind(this);
@@ -57,6 +60,12 @@ class App extends Component {
     this.acceptChallenge = this.acceptChallenge.bind(this);
     this.declineChallenge = this.declineChallenge.bind(this);
     this.onChangeDimOnline = this.onChangeDimOnline.bind(this);
+    this.newGameOnline = this.newGameOnline.bind(this);
+    this.onChangeWinByOnline = this.onChangeWinByOnline.bind(this);
+    this.sendMsg = this.sendMsg.bind(this);
+    this.onChangeMsg = this.onChangeMsg.bind(this);
+    this.leaveGame = this.leaveGame.bind(this);
+
 
     this.setupBoard();
 
@@ -76,8 +85,9 @@ class App extends Component {
           <DimSelect isOnline={this.state.isOnline} isHost={this.state.isHost} onChangeDim={this.onChangeDim} onChangeWinBy={this.onChangeWinBy} newGame={this.newGame}></DimSelect>
           <TicTacToe curTurn={this.state.currentTurn} isOnline={this.state.isOnline} boardDimensions={this.state.boardDimensions} username={this.state.username} opponent={this.state.opponent}
             player={this.state.player} board={this.state.board} modifyBoard={this.modifyBoard} isWinner={this.state.winner}
-            isGameFinished={this.state.gameFinished} isTie={this.state.tie}
+            isGameFinished={this.state.gameFinished} isTie={this.state.tie} leaveGame={this.leaveGame}
           ></TicTacToe>
+          <Chat user={this.state.username} onChangeMsg={this.onChangeMsg} sendMsg = {this.sendMsg} isOnline={this.state.isOnline} recMsg={this.state.receivedMsg}></Chat>
         </div>
       );
     }
@@ -99,7 +109,7 @@ class App extends Component {
   componentDidMount() {
 
     let self = this;
-    if (window.sessionStorage.getItem("username") != "") {
+    if (window.sessionStorage.getItem("username") !== "") {
       self.setState({
         username: window.sessionStorage.getItem("username"),
         isLoggedIn: window.sessionStorage.getItem("isLoggedIn")
@@ -343,9 +353,89 @@ class App extends Component {
       }
     });
 
+    socketio.on("receive_msg",function(data){
+      if(self.state.username === data["receiver"]){
+        let message = data["sender"]+ ": " + data["message"];
+        let messages = [...self.state.receivedMsg,message];
 
+        self.setState({
+          receivedMsg: messages
+        });
+      }
+      else if(self.state.username === data["sender"]){
+        let message = data["sender"]+ ": " + data["message"];
+        let messages = [...self.state.receivedMsg,message];
+
+        self.setState({
+          receivedMsg: messages
+        });
+      }
+    });
+
+    socketio.on("leave_game",function(data){
+      if(self.state.username===data["user"]){
+        let oldOpp = self.state.opponent;
+        alert(oldOpp +" has left your game!");
+       
+        let newMsgs = [];
+        self.setState({
+          opponent: "",
+          isOnline: false,
+          isHost: false,
+          player: "X",
+          receivedMsg: newMsgs
+    },function(){
+      self.setState({
+        winner: false,
+        gameFinished: false,
+        tie: false,
+        board: []
+      }, function () {
+        for (let i = 0; i < self.state.boardDimensions * self.state.boardDimensions; i++) {
+  
+          let oldBoard = self.state.board;
+          oldBoard[i] = " ";
+          self.setState({
+            board: oldBoard
+          });
+        }
+      });
+    });
+      }
+    });
   }
 
+
+  leaveGame(event){
+    event.preventDefault();
+    let newMsgs = [];
+    let oldOpp = this.state.opponent;
+    this.setState({
+      opponent: "",
+      isOnline: false,
+      isHost: false,
+      player: "X",
+      receivedMsg: newMsgs
+
+    },function(){
+      this.newGame(event);
+      socketio.emit("leave_game",{opponent: oldOpp});
+    });
+   
+  }
+
+
+  sendMsg(event){
+    event.preventDefault();
+    socketio.emit("send_msg",{sender: this.state.username, receiver: this.state.opponent, message: this.state.message});
+    event.target.firstChild.value = "";
+  }
+
+  onChangeMsg(event){
+    this.setState({
+      message: event.target.value
+    });
+  }
 
   getFriends() {
     socketio.emit("get_friends", { user: this.state.username });
@@ -380,13 +470,16 @@ class App extends Component {
 
   acceptChallenge(event){
     event.preventDefault();
-    let challenger = event.target.previousSibling.innerHTML;
-    let clearChallengers = [];
-    this.setState({
-      challengers: clearChallengers
-    });
-    this.newGameOnline(event);
-    socketio.emit("challenge_accepted", { challenger: challenger, receiver: this.state.username });
+    if(!this.state.isOnline){
+      let challenger = event.target.previousSibling.innerHTML;
+      let clearChallengers = [];
+      this.setState({
+        challengers: clearChallengers
+      });
+      this.newGameOnline(event);
+      socketio.emit("challenge_accepted", { challenger: challenger, receiver: this.state.username });
+
+    }
   }
 
   declineChallenge(event){
@@ -489,7 +582,7 @@ class App extends Component {
 
         let index = dim * row + col;
 
-        if (firstplayer == currentBoard[index] && firstplayer != " ") {
+        if (firstplayer === currentBoard[index] && firstplayer !== " ") {
           sameCount++;
         }
         else {
@@ -497,8 +590,8 @@ class App extends Component {
           sameCount = 1;
         }
 
-        if (sameCount == winby) {
-          if (firstplayer == userPlayer) {
+        if (sameCount === winby) {
+          if (firstplayer === userPlayer) {
             this.setState({ //current user won
               winner: true,
               gameFinished: true
@@ -528,7 +621,7 @@ class App extends Component {
 
         let index = dim * row + col;
 
-        if (firstplayer == currentBoard[index] && firstplayer != " ") {
+        if (firstplayer === currentBoard[index] && firstplayer !== " ") {
           sameCount++;
         }
         else {
@@ -536,8 +629,8 @@ class App extends Component {
           sameCount = 1;
         }
 
-        if (sameCount == winby) {
-          if (firstplayer == userPlayer) {
+        if (sameCount === winby) {
+          if (firstplayer === userPlayer) {
             this.setState({ //current user won
               winner: true,
               gameFinished: true
@@ -571,7 +664,7 @@ class App extends Component {
           continue;
         }
 
-        if (firstplayer == currentBoard[index] && firstplayer != " ") {
+        if (firstplayer === currentBoard[index] && firstplayer !== " ") {
           sameCount++;
         }
         else {
@@ -581,8 +674,8 @@ class App extends Component {
 
         tempRow--;
 
-        if (sameCount == winby) {
-          if (firstplayer == userPlayer) {
+        if (sameCount === winby) {
+          if (firstplayer === userPlayer) {
             this.setState({ //current user won
               winner: true,
               gameFinished: true
@@ -615,7 +708,7 @@ class App extends Component {
         if (tempRow >= dim) {
           continue;
         }
-        if (firstplayer == currentBoard[index] && firstplayer != " ") {
+        if (firstplayer === currentBoard[index] && firstplayer !== " ") {
           sameCount++;
         }
         else {
@@ -625,8 +718,8 @@ class App extends Component {
 
         tempRow++;
 
-        if (sameCount == winby) {
-          if (firstplayer == userPlayer) {
+        if (sameCount === winby) {
+          if (firstplayer === userPlayer) {
             this.setState({ //current user won
               winner: true,
               gameFinished: true
@@ -660,7 +753,7 @@ class App extends Component {
           continue;
         }
 
-        if (firstplayer == currentBoard[index] && firstplayer != " ") {
+        if (firstplayer === currentBoard[index] && firstplayer !== " ") {
           sameCount++;
         }
         else {
@@ -670,8 +763,8 @@ class App extends Component {
 
         tempCol++;
 
-        if (sameCount == winby) {
-          if (firstplayer == userPlayer) {
+        if (sameCount === winby) {
+          if (firstplayer === userPlayer) {
             this.setState({ //current user won
               winner: true,
               gameFinished: true
@@ -704,7 +797,7 @@ class App extends Component {
           continue;
         }
 
-        if (firstplayer == currentBoard[index] && firstplayer != " ") {
+        if (firstplayer === currentBoard[index] && firstplayer !== " ") {
           sameCount++;
         }
         else {
@@ -714,8 +807,8 @@ class App extends Component {
 
         tempCol--;
 
-        if (sameCount == winby) {
-          if (firstplayer == userPlayer) {
+        if (sameCount === winby) {
+          if (firstplayer === userPlayer) {
             this.setState({ //current user won
               winner: true,
               gameFinished: true
@@ -884,7 +977,7 @@ class App extends Component {
         let currentBoard = self.state.board;
         let playerSpaceIndex = event.target.id;
         let opponentPlayer = "";
-        if(self.state.player=="X"){
+        if(self.state.player==="X"){
           opponentPlayer="O";
         }
         else{
@@ -893,11 +986,11 @@ class App extends Component {
 
         let currentRemainingSpaces = 0;
         for (let i = 0; i < self.state.board.length; i++) {
-          if (self.state.board[i] == " ") {
+          if (self.state.board[i] === " ") {
             currentRemainingSpaces++;
           }
         }
-        if (currentRemainingSpaces == 0) {
+        if (currentRemainingSpaces === 0) {
           self.setState({
             tie: true,
             gameFinished: true
@@ -919,7 +1012,7 @@ class App extends Component {
             if(self.isWin()){
              socketio.emit("inform_of_loss", {user: self.state.opponent, board: self.state.board});
             }
-            else if(currentRemainingSpaces == 1){
+            else if(currentRemainingSpaces === 1){
               self.setState({
                 tie: true,
                 gameFinished: true
@@ -968,38 +1061,38 @@ class App extends Component {
 
         let curRemain = 0;
         for (let i = 0; i < self.state.board.length; i++) {
-          if (self.state.board[i] == " ") {
+          if (self.state.board[i] === " ") {
             curRemain++;
           }
         }
-        if (curRemain == 0) {
+        if (curRemain === 0) {
           self.setState({
             tie: true,
             gameFinished: true
           });
         }
-        if (oldBoard[event.target.id] == " ") {
+        if (oldBoard[event.target.id] === " ") {
           oldBoard[event.target.id] = this.state.player;
 
           this.setState({
             board: oldBoard
           }, function () {
-            if (self.state.opponent == "") {
+            if (self.state.opponent === "") {
 
               if (!self.isWin()) {
                 let computerPick = Math.floor(Math.random() * self.state.board.length);
                 let remainingSpaces = 0;
                 for (let i = 0; i < self.state.board.length; i++) {
-                  if (self.state.board[i] == " ") {
+                  if (self.state.board[i] === " ") {
                     remainingSpaces++;
                   }
                 }
                 if (remainingSpaces > 0) {
-                  while (self.state.board[computerPick] != " ") {
+                  while (self.state.board[computerPick] !== " ") {
                     computerPick = Math.floor(Math.random() * self.state.board.length);
                   }
                   let compPlayer = "";
-                  if (self.state.player == "X") {
+                  if (self.state.player === "X") {
                     compPlayer = "O";
                   }
                   else {
@@ -1065,7 +1158,10 @@ class App extends Component {
       isOnline: false,
       currentTurn: "X",
       isHost: false,
-      challengers: []
+      challengers: [],
+      message: "",
+      receivedMsg: []
+
     }, function () {
       window.sessionStorage.setItem("username", "");
       window.sessionStorage.setItem("isLoggedIn", "");
