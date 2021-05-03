@@ -1,0 +1,123 @@
+#friend{
+    margin-bottom: 45px;
+}
+
+#friendreq{
+    text-align: center;
+}
+#sendfr{
+    font-size: 20px;
+}
+#sendfrtxt{
+    background-color: #2C363F;
+    color: #E75A7C;
+    font-size: 16px;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    text-align: center;
+    height: 20px;
+}
+#freqbtn{
+    height: 30px;
+    width: 125px;
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 16px;
+}
+#freqbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}
+
+
+#friendReqList{
+    float:left;
+    margin-top: 40px;
+    width: 30%;
+    height: 300px;
+    border: 3px solid #E75A7C;
+    border-radius: 25px;
+    overflow: auto;
+    text-align: center;
+
+}
+.friendRequest{
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border: 2px solid #E75A7C;
+    padding-bottom: 5px;
+}
+.afr{
+    background-color: #2C363F;
+    border: 1px solid #E75A7C;
+    border-radius: 5px;
+    color: #E75A7C;
+}
+.dfr{
+    background-color: #2C363F;
+    border: 1px solid #E75A7C;
+    border-radius: 5px;
+    color: #E75A7C;
+}
+.afr:hover,.dfr:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}
+
+#friendsList{
+    float:left;
+    margin-top: 40px;
+    margin-left: 2%;
+    margin-right: 2%;
+    width: 30%;
+    height: 300px;
+    border: 3px solid #E75A7C;
+    border-radius: 25px;
+    overflow: auto;
+    text-align: center;
+}
+
+.friends{
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border: 2px solid #E75A7C;
+    padding-bottom: 5px;
+}
+
+.cbtn{
+    background-color: #2C363F;
+    border: 1px solid #E75A7C;
+    border-radius: 5px;
+    color: #E75A7C;
+}
+.cbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}
+
+
+
+#challengerList{
+    float:left;
+    margin-top: 40px;
+    width: 30%;
+    height: 300px;
+    border: 3px solid #E75A7C;
+    border-radius: 25px;
+    overflow: auto;
+    text-align: center;
+}
+.challengers{
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border: 2px solid #E75A7C;
+    padding-bottom: 5px;
+}

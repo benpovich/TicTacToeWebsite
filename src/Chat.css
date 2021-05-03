@@ -1,0 +1,32 @@
+#entireChat{
+    float:left;
+    width: 18%;
+    margin-left: 5%;
+    border: 3px solid #E75A7C;
+    height: 300px;
+    overflow: auto;
+    margin-top: 300px;
+}
+#txtbox{
+    background-color: #2C363F;
+    color: #E75A7C;
+    font-size: 16px;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    text-align: center;
+    height: 20px;
+}
+#sendbtn{
+    background-color: #2C363F;
+    border: 1px solid #E75A7C;
+    border-radius: 5px;
+    color: #E75A7C;
+}
+#sendbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}
+#chatDiv{
+    text-align: center;
+}

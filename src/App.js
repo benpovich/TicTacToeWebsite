@@ -77,10 +77,13 @@ class App extends Component {
     if (this.state.isLoggedIn) {
       return (
         <div id="everything">
-          <h3>Welcome {this.state.username}!</h3>
-          <form onSubmit={this.logoutReq}>
-            <input type="Submit" value="Log out" id="regbtn"></input>
-          </form>
+          <h3>Welcome, {this.state.username}!</h3>
+          <div id="logoutdiv">
+            <form onSubmit={this.logoutReq}>
+              <input type="Submit" value="Log out" id="logoutbtn"></input>
+            </form>
+          </div>
+          
           <FriendManager challengers={this.state.challengers} accChal={this.acceptChallenge} decChal={this.declineChallenge} sendChallenge={this.sendChallenge}decFR={this.declineFriendReq} accFR={this.acceptFriendReq} getFriendReqs={this.getFriendReqs} friends={this.state.friends} friendReqs={this.state.friendReq} reqFriend={this.sendFriendRequest} onChangeReq={this.onChangeReq}></FriendManager>
           <DimSelect isOnline={this.state.isOnline} isHost={this.state.isHost} onChangeDim={this.onChangeDim} onChangeWinBy={this.onChangeWinBy} newGame={this.newGame}></DimSelect>
           <TicTacToe curTurn={this.state.currentTurn} isOnline={this.state.isOnline} boardDimensions={this.state.boardDimensions} username={this.state.username} opponent={this.state.opponent}
@@ -356,7 +359,7 @@ class App extends Component {
     socketio.on("receive_msg",function(data){
       if(self.state.username === data["receiver"]){
         let message = data["sender"]+ ": " + data["message"];
-        let messages = [...self.state.receivedMsg,message];
+        let messages = [message, ...self.state.receivedMsg];
 
         self.setState({
           receivedMsg: messages
@@ -364,7 +367,7 @@ class App extends Component {
       }
       else if(self.state.username === data["sender"]){
         let message = data["sender"]+ ": " + data["message"];
-        let messages = [...self.state.receivedMsg,message];
+        let messages = [message, ...self.state.receivedMsg];
 
         self.setState({
           receivedMsg: messages

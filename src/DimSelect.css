@@ -1,0 +1,33 @@
+#dimdiv{
+    margin-top: 450px;
+    text-align: center;
+    font-size: 20px;
+}
+#dimlist{
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 16px;  
+}
+#winbylist{
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 16px;  
+}
+#sngbtn{
+    margin-top: 15px;
+    margin-bottom: 20px;
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 16px;  
+}
+#sngbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}

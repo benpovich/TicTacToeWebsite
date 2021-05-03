@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './DimSelect.css';
 
 class DimSelect extends Component{
     constructor(props){
@@ -7,8 +8,8 @@ class DimSelect extends Component{
     render(){
         if(this.props.isOnline===false || this.props.isHost){
             return(
-                <div>
-                    Select board dimension:
+                <div id="dimdiv">
+                    Select board dimension: 
                     <select id="dimlist" onChange={this.props.onChangeDim}>
                         <option value = "3">3</option>
                         <option value = "4">4</option>
@@ -24,7 +25,7 @@ class DimSelect extends Component{
                         <option value = "14">14</option>
                         <option value = "15">15</option>
                     </select>
-                    Select win by condition:
+                    • Select win by condition: 
                     <select id="winbylist" onChange={this.props.onChangeWinBy}>
                         <option value = "3">3</option>
                         <option value = "4">4</option>
@@ -32,14 +33,14 @@ class DimSelect extends Component{
                         <option value = "6">6</option>
                     </select>
                     <form onSubmit={this.props.newGame}>
-                        <input type="Submit" value="Start New Game"></input>
+                        <input type="Submit" value="Start New Game" id="sngbtn"></input>
                     </form>
                 </div>
             );
         }
         else{
             return(
-                <div></div>
+                <div id="dimdiv"></div>
             );
         }
         

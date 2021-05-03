@@ -1,0 +1,95 @@
+#loginTerminal h2{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 36px;
+    color: #E75A7C;
+    text-align: center;
+    margin-left: 8px;
+}
+
+#loginTerminal{
+    width: 400px;
+    height: 600px;
+    position: absolute;
+    max-width: 100%;
+    max-height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border: 8px solid #E75A7C;
+    border-radius: 25px;
+    background-color: #2C363F;
+}
+#unameTerm{
+    
+    margin-top: 100px;
+    color: #E75A7C;
+    font-size: 20px;
+    margin-left:12%;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+
+#pwordTerm{
+    margin-top: 40px;
+    color: #E75A7C;
+    font-size: 20px;
+    margin-left:12%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#unameTerm input{
+    background-color: #2C363F;
+    color: #E75A7C;
+    font-size: 16px;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    text-align: center;
+    height: 20px;
+}
+
+#pwordTerm input{
+    background-color: #2C363F;
+    color: #E75A7C;
+    font-size: 16px;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    text-align: center;
+    height: 20px;
+}
+#loginbtn{
+    margin-top: 25px;
+    margin-left: 140px;
+    height: 30px;
+    width: 125px;
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 20px;
+
+}
+#loginbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}
+
+#regbtn{
+    margin-top: 15px;
+    margin-left: 140px;
+    height: 30px;
+    width: 125px;
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 20px;
+
+}
+#regbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
+}

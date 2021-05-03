@@ -1,12 +1,37 @@
 #board{
     display: grid;
     margin: auto;
-    background-color: aqua;
+    background-color:#2C363F ;
+    border: 3px solid #E75A7C;
+    vertical-align: middle;
+    
 }
-
+#totalboard{
+    text-align: center;
+}
 .boardSquare{
     
-    border: 1px solid black;
+    border: 1px solid #E75A7C;
     text-align: center;
+    padding-top: 25%;
     
+}
+#totalboard h3{
+    text-align: center;
+    font-size: 30px;
+}
+
+#lvbtn{
+    text-align: center;
+    background-color: #2C363F;
+    border: 2px solid #E75A7C;
+    border-radius: 10px;
+    color: #E75A7C;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+#lvbtn:hover{
+    background-color: #E75A7C;
+    color: #2C363F;
+    border-color: #2C363F;
 }
