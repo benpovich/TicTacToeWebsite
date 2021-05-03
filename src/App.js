@@ -240,7 +240,7 @@ class App extends Component {
         }
         else {
           if (data["duplicate"]) {
-            alert("Account with username: " + this.state.username + " already exists! Try logging in.");
+            alert("Account with username: " + self.state.username + " already exists! Try logging in.");
           }
           else {
             alert("Registration unsuccessful :(");
