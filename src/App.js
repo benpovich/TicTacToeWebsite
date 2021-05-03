@@ -83,14 +83,14 @@ class App extends Component {
               <input type="Submit" value="Log out" id="logoutbtn"></input>
             </form>
           </div>
-          
-          <FriendManager challengers={this.state.challengers} accChal={this.acceptChallenge} decChal={this.declineChallenge} sendChallenge={this.sendChallenge}decFR={this.declineFriendReq} accFR={this.acceptFriendReq} getFriendReqs={this.getFriendReqs} friends={this.state.friends} friendReqs={this.state.friendReq} reqFriend={this.sendFriendRequest} onChangeReq={this.onChangeReq}></FriendManager>
+
+          <FriendManager challengers={this.state.challengers} accChal={this.acceptChallenge} decChal={this.declineChallenge} sendChallenge={this.sendChallenge} decFR={this.declineFriendReq} accFR={this.acceptFriendReq} getFriendReqs={this.getFriendReqs} friends={this.state.friends} friendReqs={this.state.friendReq} reqFriend={this.sendFriendRequest} onChangeReq={this.onChangeReq}></FriendManager>
           <DimSelect isOnline={this.state.isOnline} isHost={this.state.isHost} onChangeDim={this.onChangeDim} onChangeWinBy={this.onChangeWinBy} newGame={this.newGame}></DimSelect>
           <TicTacToe curTurn={this.state.currentTurn} isOnline={this.state.isOnline} boardDimensions={this.state.boardDimensions} username={this.state.username} opponent={this.state.opponent}
             player={this.state.player} board={this.state.board} modifyBoard={this.modifyBoard} isWinner={this.state.winner}
             isGameFinished={this.state.gameFinished} isTie={this.state.tie} leaveGame={this.leaveGame}
           ></TicTacToe>
-          <Chat user={this.state.username} onChangeMsg={this.onChangeMsg} sendMsg = {this.sendMsg} isOnline={this.state.isOnline} recMsg={this.state.receivedMsg}></Chat>
+          <Chat user={this.state.username} onChangeMsg={this.onChangeMsg} sendMsg={this.sendMsg} isOnline={this.state.isOnline} recMsg={this.state.receivedMsg}></Chat>
         </div>
       );
     }
@@ -137,7 +137,7 @@ class App extends Component {
       }
       else if (self.state.username === data["receiver"]) {
         //set state variables
-        
+
         self.setState({
           opponent: data["challenger"],
           player: data["receivePlayer"],
@@ -169,37 +169,37 @@ class App extends Component {
 
     });
 
-    socketio.on("inform_of_tie",function(data){
-      if(self.state.username===data["user"]){
+    socketio.on("inform_of_tie", function (data) {
+      if (self.state.username === data["user"]) {
         self.setState({
           board: data["board"]
-        },function(){
-        self.setState({
-          tie: true,
-          gameFinished: true
+        }, function () {
+          self.setState({
+            tie: true,
+            gameFinished: true
+          });
         });
-      });
-    }
+      }
     });
 
-    socketio.on("inform_of_loss",function(data){
-      if(self.state.username===data["user"]){
+    socketio.on("inform_of_loss", function (data) {
+      if (self.state.username === data["user"]) {
         self.setState({
           board: data["board"]
-          
-        },function(){
+
+        }, function () {
           self.setState({
             winner: false,
             gameFinished: true,
             tie: false
           });
         });
-        
+
       }
     });
 
-    socketio.on("receive_move",function(data){
-      if(self.state.username===data["user"]){
+    socketio.on("receive_move", function (data) {
+      if (self.state.username === data["user"]) {
 
         let newBoard = data["board"];
         self.setState({
@@ -326,8 +326,8 @@ class App extends Component {
       }
     });
 
-    socketio.on("updateBoardDim",function(data){
-      if(self.state.username === data["opponent"]){
+    socketio.on("updateBoardDim", function (data) {
+      if (self.state.username === data["opponent"]) {
         self.setState({
           board: data["board"],
           boardDimensions: data["dim"]
@@ -335,16 +335,16 @@ class App extends Component {
       }
     });
 
-    socketio.on("changeWinBy",function(data){
-      if(self.state.username === data["opponent"]){
+    socketio.on("changeWinBy", function (data) {
+      if (self.state.username === data["opponent"]) {
         self.setState({
           winby: data["winby"]
         });
       }
     });
 
-    socketio.on("newGame",function(data){
-      if(self.state.username === data["opponent"]){
+    socketio.on("newGame", function (data) {
+      if (self.state.username === data["opponent"]) {
         self.setState({
           board: data["board"],
           winner: false,
@@ -356,17 +356,17 @@ class App extends Component {
       }
     });
 
-    socketio.on("receive_msg",function(data){
-      if(self.state.username === data["receiver"]){
-        let message = data["sender"]+ ": " + data["message"];
+    socketio.on("receive_msg", function (data) {
+      if (self.state.username === data["receiver"]) {
+        let message = data["sender"] + ": " + data["message"];
         let messages = [message, ...self.state.receivedMsg];
 
         self.setState({
           receivedMsg: messages
         });
       }
-      else if(self.state.username === data["sender"]){
-        let message = data["sender"]+ ": " + data["message"];
+      else if (self.state.username === data["sender"]) {
+        let message = data["sender"] + ": " + data["message"];
         let messages = [message, ...self.state.receivedMsg];
 
         self.setState({
@@ -375,11 +375,11 @@ class App extends Component {
       }
     });
 
-    socketio.on("leave_game",function(data){
-      if(self.state.username===data["user"]){
+    socketio.on("leave_game", function (data) {
+      if (self.state.username === data["user"]) {
         let oldOpp = self.state.opponent;
-        alert(oldOpp +" has left your game!");
-       
+        alert(oldOpp + " has left your game!");
+
         let newMsgs = [];
         self.setState({
           opponent: "",
@@ -387,29 +387,29 @@ class App extends Component {
           isHost: false,
           player: "X",
           receivedMsg: newMsgs
-    },function(){
-      self.setState({
-        winner: false,
-        gameFinished: false,
-        tie: false,
-        board: []
-      }, function () {
-        for (let i = 0; i < self.state.boardDimensions * self.state.boardDimensions; i++) {
-  
-          let oldBoard = self.state.board;
-          oldBoard[i] = " ";
+        }, function () {
           self.setState({
-            board: oldBoard
+            winner: false,
+            gameFinished: false,
+            tie: false,
+            board: []
+          }, function () {
+            for (let i = 0; i < self.state.boardDimensions * self.state.boardDimensions; i++) {
+
+              let oldBoard = self.state.board;
+              oldBoard[i] = " ";
+              self.setState({
+                board: oldBoard
+              });
+            }
           });
-        }
-      });
-    });
+        });
       }
     });
   }
 
 
-  leaveGame(event){
+  leaveGame(event) {
     event.preventDefault();
     let newMsgs = [];
     let oldOpp = this.state.opponent;
@@ -420,21 +420,21 @@ class App extends Component {
       player: "X",
       receivedMsg: newMsgs
 
-    },function(){
+    }, function () {
       this.newGame(event);
-      socketio.emit("leave_game",{opponent: oldOpp});
+      socketio.emit("leave_game", { opponent: oldOpp });
     });
-   
+
   }
 
 
-  sendMsg(event){
+  sendMsg(event) {
     event.preventDefault();
-    socketio.emit("send_msg",{sender: this.state.username, receiver: this.state.opponent, message: this.state.message});
+    socketio.emit("send_msg", { sender: this.state.username, receiver: this.state.opponent, message: this.state.message });
     event.target.firstChild.value = "";
   }
 
-  onChangeMsg(event){
+  onChangeMsg(event) {
     this.setState({
       message: event.target.value
     });
@@ -461,9 +461,9 @@ class App extends Component {
     event.preventDefault();
     let friend = event.target.previousSibling.innerHTML;
     if (this.state.challengers && !this.state.challengers.includes(friend)) { //checks to make sure you didnt already challenge
-    socketio.emit("send_challenge", { user: this.state.username, friend: friend });
+      socketio.emit("send_challenge", { user: this.state.username, friend: friend });
     }
-    
+
   }
 
 
@@ -471,9 +471,9 @@ class App extends Component {
     socketio.emit("get_friend_req", { user: this.state.username });
   }
 
-  acceptChallenge(event){
+  acceptChallenge(event) {
     event.preventDefault();
-    if(!this.state.isOnline){
+    if (!this.state.isOnline) {
       let challenger = event.target.previousSibling.innerHTML;
       let clearChallengers = [];
       this.setState({
@@ -485,12 +485,12 @@ class App extends Component {
     }
   }
 
-  declineChallenge(event){
+  declineChallenge(event) {
     event.preventDefault();
     let challenger = event.target.previousSibling.previousSibling.innerHTML;
     let removeChallenge = this.state.challengers;
     let index = removeChallenge.indexOf(challenger);
-    removeChallenge.splice(index,1);
+    removeChallenge.splice(index, 1);
     this.setState({
       challenger: removeChallenge
     });
@@ -515,7 +515,7 @@ class App extends Component {
     });
   }
 
-  onChangeWinByOnline(event){
+  onChangeWinByOnline(event) {
     let winbycond = event.target.value;
     if (Number(winbycond) > Number(this.state.boardDimensions)) {
       winbycond = this.state.boardDimensions
@@ -523,26 +523,26 @@ class App extends Component {
     }
     this.setState({
       winby: winbycond
-    },function(){
-      socketio.emit("changeWinBy",{winby: winbycond, opponent: this.state.opponent});
+    }, function () {
+      socketio.emit("changeWinBy", { winby: winbycond, opponent: this.state.opponent });
     });
   }
 
   onChangeWinBy(event) {
-    if(this.state.isOnline){
+    if (this.state.isOnline) {
       this.onChangeWinByOnline(event);
     }
-    else{
+    else {
       let winbycond = event.target.value;
-    if (Number(winbycond) > Number(this.state.boardDimensions)) {
-      winbycond = this.state.boardDimensions
-      event.target.value = winbycond;
+      if (Number(winbycond) > Number(this.state.boardDimensions)) {
+        winbycond = this.state.boardDimensions
+        event.target.value = winbycond;
+      }
+      this.setState({
+        winby: winbycond
+      });
     }
-    this.setState({
-      winby: winbycond
-    });
-    }
-    
+
   }
 
   sendFriendRequest(event) {
@@ -834,15 +834,15 @@ class App extends Component {
   }
 
 
-  newGameOnline(event){
+  newGameOnline(event) {
     let thisPlayer = "";
     let oppPlayer = "";
-    if(Math.random<0.5){
-      thisPlayer= "X";
+    if (Math.random < 0.5) {
+      thisPlayer = "X";
       oppPlayer = "O";
     }
-    else{
-      thisPlayer= "O";
+    else {
+      thisPlayer = "O";
       oppPlayer = "X";
     }
     this.setState({
@@ -859,8 +859,8 @@ class App extends Component {
         oldBoard[i] = " ";
         this.setState({
           board: oldBoard
-        },function(){
-          socketio.emit("newGame",{board: this.state.board, opponent: this.state.opponent, oppPlayer: oppPlayer});
+        }, function () {
+          socketio.emit("newGame", { board: this.state.board, opponent: this.state.opponent, oppPlayer: oppPlayer });
         });
       }
     });
@@ -870,10 +870,10 @@ class App extends Component {
 
   newGame(event) {
     event.preventDefault();
-    if(this.state.isOnline){
+    if (this.state.isOnline) {
       this.newGameOnline(event);
     }
-    else{
+    else {
       this.setState({
         winner: false,
         gameFinished: false,
@@ -881,7 +881,7 @@ class App extends Component {
         board: []
       }, function () {
         for (let i = 0; i < this.state.boardDimensions * this.state.boardDimensions; i++) {
-  
+
           let oldBoard = this.state.board;
           oldBoard[i] = " ";
           this.setState({
@@ -890,11 +890,11 @@ class App extends Component {
         }
       });
     }
-    
+
   }
 
 
-  onChangeDimOnline(event){
+  onChangeDimOnline(event) {
     if (window.confirm("Changing the dimensions will reset the game. Continue?")) {
 
       let dim = event.target.value;
@@ -909,12 +909,12 @@ class App extends Component {
           oldBoard[i] = " ";
           this.setState({
             board: oldBoard
-          },function(){
-            socketio.emit("updateBoardDim",{board: this.state.board, dim: dim, opponent: this.state.opponent});
+          }, function () {
+            socketio.emit("updateBoardDim", { board: this.state.board, dim: dim, opponent: this.state.opponent });
           });
         }
 
-        
+
 
       });
     }
@@ -925,31 +925,31 @@ class App extends Component {
 
   onChangeDim(event) {
     event.preventDefault();
-    if(this.state.isOnline){
+    if (this.state.isOnline) {
       this.onChangeDimOnline(event);
-    }else{
+    } else {
       if (window.confirm("Changing the dimensions will reset the game. Continue?")) {
-      let dim = event.target.value;
-      let clearBoard = [];
-      this.setState({
-        boardDimensions: dim,
-        board: clearBoard
-      }, function () { //callback necessary as state does not update right away
-        for (let i = 0; i < this.state.boardDimensions * this.state.boardDimensions; i++) {
+        let dim = event.target.value;
+        let clearBoard = [];
+        this.setState({
+          boardDimensions: dim,
+          board: clearBoard
+        }, function () { //callback necessary as state does not update right away
+          for (let i = 0; i < this.state.boardDimensions * this.state.boardDimensions; i++) {
 
-          let oldBoard = this.state.board;
-          oldBoard[i] = " ";
-          this.setState({
-            board: oldBoard
-          });
-        }
-      });
+            let oldBoard = this.state.board;
+            oldBoard[i] = " ";
+            this.setState({
+              board: oldBoard
+            });
+          }
+        });
+      }
+      else {
+        event.target.value = this.state.boardDimensions;
+      }
     }
-    else {
-      event.target.value = this.state.boardDimensions;
-    }
-    }
-    
+
 
 
   }
@@ -968,11 +968,7 @@ class App extends Component {
 
 
   modifyBoardOnline(event) {
-    //send moves via socketio
-    //first: veryify that game isnt over,
-    //second: verify that user isnt going out of turn
-    //third: verify that user selected correct space
-    //fourth: send move, update board state on both, switch turns
+
     if (!this.state.gameFinished) {
       let self = this;
       if (self.state.currentTurn === self.state.player) {
@@ -980,11 +976,11 @@ class App extends Component {
         let currentBoard = self.state.board;
         let playerSpaceIndex = event.target.id;
         let opponentPlayer = "";
-        if(self.state.player==="X"){
-          opponentPlayer="O";
+        if (self.state.player === "X") {
+          opponentPlayer = "O";
         }
-        else{
-          opponentPlayer="X";
+        else {
+          opponentPlayer = "X";
         }
 
         let currentRemainingSpaces = 0;
@@ -997,8 +993,8 @@ class App extends Component {
           self.setState({
             tie: true,
             gameFinished: true
-          },function(){
-            socketio.emit("inform_of_tie", {user: self.state.opponent, board: self.state.board});
+          }, function () {
+            socketio.emit("inform_of_tie", { user: self.state.opponent, board: self.state.board });
 
           });
         }
@@ -1008,27 +1004,27 @@ class App extends Component {
           self.setState({
             board: currentBoard,
             currentTurn: opponentPlayer
-          },function(){
-            
+          }, function () {
+
             //first, check for win
-            
-            if(self.isWin()){
-             socketio.emit("inform_of_loss", {user: self.state.opponent, board: self.state.board});
+
+            if (self.isWin()) {
+              socketio.emit("inform_of_loss", { user: self.state.opponent, board: self.state.board });
             }
-            else if(currentRemainingSpaces === 1){
+            else if (currentRemainingSpaces === 1) {
               self.setState({
                 tie: true,
                 gameFinished: true
               })
-              socketio.emit("inform_of_tie", {user: self.state.opponent, board: self.state.board});
+              socketio.emit("inform_of_tie", { user: self.state.opponent, board: self.state.board });
             }
-            else{
+            else {
               //send update
-              socketio.emit("send_player_move",{user: self.state.opponent, board: self.state.board, player: self.state.player, curTurn: self.state.currentTurn});
+              socketio.emit("send_player_move", { user: self.state.opponent, board: self.state.board, player: self.state.player, curTurn: self.state.currentTurn });
 
             }
-            
-            
+
+
 
 
           });

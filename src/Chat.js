@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import './Chat.css';
 
-class Chat extends Component{
-    constructor(props){
+class Chat extends Component {
+    constructor(props) {
         super(props);
     }
-    render(){
-        if(this.props.isOnline){
-            return(
-                
+    render() {
+        if (this.props.isOnline) {
+            return (
+
                 <div id="entireChat">
                     <div id="chatDiv">
                         <form id="chat" onSubmit={this.props.sendMsg}>
@@ -16,24 +16,24 @@ class Chat extends Component{
                             <input type="submit" value="Send" id="sendbtn"></input>
                         </form>
                     </div>
-                    {this.props.recMsg.map((value,index)=>(
-                        <div key={index} id={"m-"+index} className="chatmsg">
+                    {this.props.recMsg.map((value, index) => (
+                        <div key={index} id={"m-" + index} className="chatmsg">
                             <p>{value}</p>
                         </div>
 
                     ))}
                 </div>
-                
+
             );
         }
-        else{
-            return(
+        else {
+            return (
                 <div>
 
                 </div>
             );
         }
-        
+
     }
 }
 export default Chat;
