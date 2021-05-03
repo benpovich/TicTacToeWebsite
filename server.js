@@ -186,7 +186,55 @@ io.sockets.on("connection", function (socket) {
                 console.log(data["user"] + " requested friends");
                 io.sockets.emit("get_friends",{isSuccess: true, friends: response, username: data["user"]});
             }
-        })
-    })
+        });
+    });
 
+
+    socket.on('send_challenge',function(data){
+        io.sockets.emit("receive_challenge",{challenger: data["user"], receiver: data["friend"]});
+    });
+
+    socket.on('challenge_accepted',function(data){
+        //determine player value
+        let chalPlayer = "";
+        let receivePlayer="";
+        if(Math.random()<0.5){
+            chalPlayer="X";
+            receivePlayer="O";
+        }
+        else{
+            chalPlayer="O";
+            receivePlayer="X";
+        }
+        io.sockets.emit("challenge_accepted",{challenger: data["challenger"], receiver: data["receiver"], chalPlayer: chalPlayer, receivePlayer: receivePlayer});
+    });
+
+    socket.on('challenge_declined',function(data){
+        io.sockets.emit("challenge_declined",{challenger: data["challenger"], receiver: data["receiver"]});
+    });
+
+
+    socket.on('inform_of_tie',function(data){
+        io.sockets.emit("inform_of_tie",{user: data["user"], board: data["board"]});
+    });
+
+    socket.on('inform_of_loss',function(data){
+        io.sockets.emit("inform_of_loss",{user: data["user"], board: data["board"]});
+    });
+
+    socket.on('send_player_move',function(data){
+        io.sockets.emit("receive_move",{board: data["board"], curTurn: data["curTurn"], user: data["user"]});
+    });
+
+    socket.on('updateBoardDim',function(data){
+        io.sockets.emit("updateBoardDim",{board: data["board"], dim: data["dim"], opponent: data["opponent"]});
+    });
+
+    socket.on('changeWinBy',function(data){
+        io.sockets.emit("changeWinBy",{winby: data["winby"], opponent: data["opponent"]});
+    });
+
+    socket.on('newGame',function(data){
+        io.sockets.emit("newGame",{oppPlayer: data["oppPlayer"], board: data["board"], opponent: data["opponent"]});
+    });
 });

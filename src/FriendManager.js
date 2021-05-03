@@ -32,6 +32,18 @@ class FriendManager extends Component{
                         {this.props.friends.map((value,index)=>(
                             <div key={index} id={"f-"+index} className="friends">
                                  <p>{value.friend}</p>
+                                 <input type="Submit" value="Challenge" className="cbtn" onClick={this.props.sendChallenge}></input>
+                            </div>   
+                            ))}
+                        </div>
+
+                        <div id="challengerList">
+                            <h3>Challengers:</h3>
+                        {this.props.challengers.map((value,index)=>(
+                            <div key={index} id={"c-"+index} className="challengers">
+                                 <p>{value}</p>
+                                 <input type="Submit" value="Accept" className="afr" onClick={this.props.accChal}></input>
+                                 <input type="Submit" value="Decline" className="dfr" onClick={this.props.decChal}></input>
                             </div>   
                             ))}
                         </div>

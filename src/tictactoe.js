@@ -20,64 +20,135 @@ class TicTacToe extends Component{
             "height": squareWidth,
             "fontSize": fontSize+"px"
         };
-        if(this.props.isGameFinished){
-            if(this.props.isTie){
-                return(
-                    <div id="totalboard">
-                        <h3>Unfortunately {this.props.username}, you tied.</h3>
-                        <div id="board" style={boardStyle}>
-                            {this.props.board.map((value,index) => (
-                            <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
-                        ))}
+        if(this.props.isOnline){
+            if(this.props.isGameFinished){
+                if(this.props.isTie){
+                    return(
+                        <div id="totalboard">
+                            <h3>Unfortunately {this.props.username}, you tied with {this.props.opponent}.</h3>
+                            <div id="board" style={boardStyle}>
+                                {this.props.board.map((value,index) => (
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                            ))}
+                            </div>
                         </div>
-                    </div>
-                   
-                ); 
+                       
+                    ); 
+                }
+    
+                else if(this.props.isWinner){
+                    return(
+                        <div id="totalboard">
+                            <h3>Congrats {this.props.username}, you won against {this.props.opponent}!</h3>
+                            <div id="board" style={boardStyle}>
+                                {this.props.board.map((value,index) => (
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                            ))}
+                            </div>
+                        </div>
+                       
+                    ); 
+                }
+                else{
+                    return(
+                        <div id="totalboard">
+                            <h3>Sorry {this.props.username}, you lost against {this.props.opponent} :(</h3>
+                            <div id="board" style={boardStyle}>
+                                {this.props.board.map((value,index) => (
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                            ))}
+                            </div>
+                        </div>
+                       
+                    ); 
+                }
+                
             }
+            else{
+                let opPlayer = "";
+                if(this.props.player=="X"){
+                    opPlayer = "O";
+                }
+                else{
+                    opPlayer = "X";
+                }
 
-            else if(this.props.isWinner){
                 return(
                     <div id="totalboard">
-                        <h3>Congrats {this.props.username}, you won!</h3>
+                        <h2>{this.props.username}({this.props.player}) vs {this.props.opponent}({opPlayer})</h2>
+                        <h3>{this.props.curTurn}'s turn</h3>
+
                         <div id="board" style={boardStyle}>
                             {this.props.board.map((value,index) => (
-                            <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
-                        ))}
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                             ))}
                         </div>
                     </div>
-                   
-                ); 
+                    
+                );
+            }
+        }
+        else{
+            if(this.props.isGameFinished){
+                if(this.props.isTie){
+                    return(
+                        <div id="totalboard">
+                            <h3>Unfortunately {this.props.username}, you tied.</h3>
+                            <div id="board" style={boardStyle}>
+                                {this.props.board.map((value,index) => (
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                            ))}
+                            </div>
+                        </div>
+                       
+                    ); 
+                }
+    
+                else if(this.props.isWinner){
+                    return(
+                        <div id="totalboard">
+                            <h3>Congrats {this.props.username}, you won!</h3>
+                            <div id="board" style={boardStyle}>
+                                {this.props.board.map((value,index) => (
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                            ))}
+                            </div>
+                        </div>
+                       
+                    ); 
+                }
+                else{
+                    return(
+                        <div id="totalboard">
+                            <h3>Sorry {this.props.username}, you lost :(</h3>
+                            <div id="board" style={boardStyle}>
+                                {this.props.board.map((value,index) => (
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                            ))}
+                            </div>
+                        </div>
+                       
+                    ); 
+                }
+                
             }
             else{
                 return(
                     <div id="totalboard">
-                        <h3>Sorry {this.props.username}, you lost :(</h3>
                         <div id="board" style={boardStyle}>
                             {this.props.board.map((value,index) => (
-                            <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
-                        ))}
+                                <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
+                             ))}
                         </div>
                     </div>
-                   
-                ); 
+                    
+                );
             }
             
+            
         }
-        else{
-            return(
-                <div id="totalboard">
-                    <div id="board" style={boardStyle}>
-                        {this.props.board.map((value,index) => (
-                            <div key={index} id={index} className="boardSquare" style={squareStyle} onClick={this.props.modifyBoard}>{value}</div>
-                         ))}
-                    </div>
-                </div>
-                
-            );
-        }
-        
-        
     }
+        
 
     
 
