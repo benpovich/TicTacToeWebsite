@@ -1,3 +1,10 @@
+Ben Povich
+
+475842
+
+benpovich
+
+
 Welcome to my tic tac toe online website!
 
 This project was created with react and node.js
