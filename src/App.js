@@ -570,7 +570,7 @@ class App extends Component {
 
     let currentBoard = this.state.board;
     let dim = this.state.boardDimensions
-    let winby = this.state.winby;
+    let winby = Number(this.state.winby);
     let userPlayer = this.state.player;
 
 
